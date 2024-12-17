@@ -1,2 +1,5 @@
 (library
- (name otor))
+ (name otor)
+ (libraries sha uri eio eio_main cohttp-eio)
+ (preprocess (pps ppx_deriving.show)))
+

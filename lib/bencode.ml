@@ -6,6 +6,44 @@ type t =
   | BString of string
   | BInteger of int64
 
+(* Accessors *)
+
+let bval_opt ~key = function
+  | BDict dict -> Dict.find_opt key dict
+  | _          -> None
+
+let get_int_opt ~key dict =
+  match bval_opt ~key dict with
+  | Some (BInteger i) -> Some i
+  | _                 -> None
+
+let get_str_opt ~key dict =
+  match bval_opt ~key dict with
+  | Some (BString s)  -> Some s
+  | _                 -> None
+
+let get_lst_opt ~key dict =
+  match bval_opt ~key dict with
+  | Some (BList l)    -> Some l
+  | _                 -> None
+
+let get_dct_opt ~key dict =
+  match bval_opt ~key dict with
+  | Some (BDict d)    -> Some d
+  | _                 -> None
+
+let rec bval_deep_opt ~keys bval =
+  match keys, bval with
+  | [], _             -> Some bval
+  | x::xs, BDict dict ->
+    begin match bval_opt ~key:x (BDict dict) with
+      | Some subval -> bval_deep_opt ~keys:xs subval
+      | None        -> None
+    end
+  | _ -> None
+
+(* Parsing and Serialization *)
+
 let rec to_string = function
   | BString s  -> Printf.sprintf "%d:%s" (String.length s) s
   | BInteger i -> Printf.sprintf "i%se" (Int64.to_string i)
