@@ -27,14 +27,14 @@ let of_bencode root =
   let open Bencode in
   let (>>=) = Option.bind in
   bval_opt ~key:"info" root            >>= fun info ->
-  get_int_opt ~key:"length" info       >>= fun length ->
+  (*get_int_opt ~key:"length" info       >>= fun length ->*)
   get_int_opt ~key:"piece length" info >>= fun piece_len ->
   get_str_opt ~key:"pieces" info       >>= fun pieces ->
   split_pieces pieces                  >>= fun pieces ->
     let name = get_str_opt ~key:"name" info in
     let announce = get_str_opt ~key:"announce" root in
     let info_hash = to_string info |> Sha1.string |> Sha1.to_bin in
-    Some { name; announce; info_hash; pieces; piece_len; length }
+    Some { name; announce; info_hash; pieces; piece_len; length=0L }
 
 let to_uri torrent = 
   let add_param key value uri = Uri.add_query_param uri (key, [value]) in
@@ -50,4 +50,3 @@ let to_scrape_uri torrent =
   Uri.of_string (Option.get torrent.announce) |> fun base ->
   Uri.with_path base "scrape"                 |> fun base ->
   Uri.add_query_param base ("info_hash", [torrent.info_hash])
-

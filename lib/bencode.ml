@@ -44,7 +44,7 @@ let rec bval_deep_opt ~keys bval =
 
 (* Parsing and Serialization *)
 
-let rec to_string = function
+let rec to_string = function (* TODO use buffer here *)
   | BString s  -> Printf.sprintf "%d:%s" (String.length s) s
   | BInteger i -> Printf.sprintf "i%se" (Int64.to_string i)
   | BList l    -> List.fold_left (fun acc s -> acc ^ to_string s) "l" l ^ "e"
